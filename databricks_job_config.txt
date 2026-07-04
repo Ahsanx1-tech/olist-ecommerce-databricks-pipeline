@@ -1,0 +1,48 @@
+# Upgrade Databricks SDK to the latest version and restart Python to see updated packages
+%pip install --upgrade databricks-sdk==0.70.0
+%restart_python
+
+from databricks.sdk.service.jobs import JobSettings as Job
+
+
+New_Job_2026_07_04_01_26_42 = Job.from_dict(
+    {
+        "name": "New Job 2026-07-04 01:26:42",
+        "schedule": {
+            "quartz_cron_expression": "54 0 8 * * ?",
+            "timezone_id": "Asia/Karachi",
+            "pause_status": "UNPAUSED",
+        },
+        "tasks": [
+            {
+                "task_key": "Run_Master_Join",
+                "notebook_task": {
+                    "notebook_path": "/Workspace/Users/1ahsanali2024@gmail.com/Delta Lake",
+                    "source": "WORKSPACE",
+                },
+                "environment_key": "Run_Master_Join_environment",
+                "compute": {
+                    "hardware_accelerator": "GPU_1xA10",
+                },
+            },
+        ],
+        "queue": {
+            "enabled": True,
+        },
+        "environments": [
+            {
+                "environment_key": "Run_Master_Join_environment",
+                "spec": {
+                    "environment_version": "5",
+                },
+            },
+        ],
+        "performance_target": "PERFORMANCE_OPTIMIZED",
+    }
+)
+
+from databricks.sdk import WorkspaceClient
+
+w = WorkspaceClient()
+w.jobs.reset(new_settings=New_Job_2026_07_04_01_26_42, job_id=343726150939646)
+# or create a new job using: w.jobs.create(**New_Job_2026_07_04_01_26_42.as_shallow_dict())
